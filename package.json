@@ -1,0 +1,22 @@
+{
+  "name": "unique-tabid",
+  "version": "1.0.0",
+  "description": "This package helps you maintain Unique IDs per tab. This package takes care of differentiating duplicated tabs/sessions as well. This works by using SessionStorage and BroadcastChannel Communication.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haricane8133/unique-tabid.git"
+  },
+  "keywords": [
+    "TabId"
+  ],
+  "author": "haricane8133",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haricane8133/unique-tabid/issues"
+  },
+  "homepage": "https://github.com/haricane8133/unique-tabid#readme"
+}
