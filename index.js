@@ -10,7 +10,7 @@ class UniqueTabId {
    */
   newTabIdForDuplicatedTab = true;
   /**
-   * A callback that is called with the tabId and isTabDuplicated, after the Broadcast Channel communication is done
+   * A callback that is called with the tabId, isTabDuplicated and isNewTab, after the Broadcast Channel communication is done
    */
   tabidCallback = () => {};
   /**
@@ -45,8 +45,9 @@ class UniqueTabId {
           this.#gotResponse = true;
           if(this.newTabIdForDuplicatedTab){
             tabid = this.uniqIdFunc();
+            window.sessionStorage.setItem(this.#sessionStorageKey, tabid);
           }
-          this.tabidCallback(tabid, true);
+          this.tabidCallback(tabid, true, true);
         }
       }
     };
@@ -62,7 +63,7 @@ class UniqueTabId {
     if(tabid === null){
       tabid = this.uniqIdFunc();
       window.sessionStorage.setItem(this.#sessionStorageKey, tabid);
-      this.tabidCallback(tabid, false);
+      this.tabidCallback(tabid, false, true);
     }
     else{
       this.#gotResponse = false;
@@ -72,7 +73,7 @@ class UniqueTabId {
       });
       setTimeout(() => {
         if(!this.#gotResponse){
-          this.tabidCallback(tabid, false);
+          this.tabidCallback(tabid, false, false);
         }
       }, this.WAIT_TIMEOUT);
     }

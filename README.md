@@ -48,10 +48,10 @@ uniqueTabId.newTabIdForDuplicatedTab = true;
 
 
 // This is the callback that is called when we have the tabId ready, after all the communications
-uniqueTabId.tabidCallback = (tabid, wasDuplicated) => {}
+uniqueTabId.tabidCallback = (tabid, wasDuplicated, isNewTab) => {}
 // If used in React, you can call a State Change like shown in the functional React example below.
 const [text, setText] = useState("");
-uniqueTabId.tabidCallback = (tabid, wasDuplicated) => setText(`TabId: ${tabid}; Duplicated: ${wasDuplicated}`);
+uniqueTabId.tabidCallback = (tabid, wasDuplicated, isNewTab) => setText(`TabId: ${tabid}; Duplicated: ${wasDuplicated}; New Tab: ${isNewTab}`);
 
 // IMPORTANT: You need to absolutely call the following method at every tab initialization. This is the main process.
 uniqueTabId.initTab()
