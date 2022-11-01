@@ -1,24 +1,24 @@
-class UniqueTabId {
-  #sessionStorageKey;
-  #sessionStorageKey_parentTab;
+export default class UniqueTabId {
+  #sessionStorageKey: string;
+  #sessionStorageKey_parentTab: string;
   #gotResponse = false;
-  #channel = undefined;
+  #channel: BroadcastChannel | null  = null;
 
   /**
    * A callback that is called with the tabId, isTabNew and parentTabId, after the Broadcast Channel communication is done
    * 
    */
-  tabIdCallback = () => {};
+  tabIdCallback: (param: iTabIdCallback) => {};
   /**
    * A function that would be called to generate a uniqueId
    */
-  uniqIdFunc = () => {};
+  uniqIdFunc: () => string;
   /**
    * The duration in milliseconds that we will wait for all the other tabs to respond back when asked for search
    */
   WAIT_TIMEOUT = 1000;
 
-  constructor(appId = "client") {
+  constructor(appId: string = "client") {
     this.initTab = this.initTab.bind(this);
     this.removeTabId = this.removeTabId.bind(this);
 
@@ -31,7 +31,7 @@ class UniqueTabId {
     
       if(type === "SEARCH"){
         if(window.sessionStorage.getItem(this.#sessionStorageKey) === tabId){
-          this.#channel.postMessage({
+          this.#channel!.postMessage({
             type: "FOUND",
             tabId
           })
@@ -64,18 +64,22 @@ class UniqueTabId {
     }
     else{
       this.#gotResponse = false;
-      this.#channel.postMessage({
+      this.#channel!.postMessage({
         type: "SEARCH",
         tabId
       });
       setTimeout(() => {
         if(!this.#gotResponse){
           const parentTabId = window.sessionStorage.getItem(this.#sessionStorageKey_parentTab);
-          this.tabIdCallback({tabId, isTabNew: false, parentTabId});
+          this.tabIdCallback({tabId: tabId!, isTabNew: false, parentTabId});
         }
       }, this.WAIT_TIMEOUT);
     }
   }
 }
 
-module.exports = UniqueTabId;
+export interface iTabIdCallback {
+  tabId: string,
+  isTabNew: boolean,
+  parentTabId: string | null
+}

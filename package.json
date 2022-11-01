@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "prepare": "npm run build",
-    "build": "babel src -d lib --source-maps"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -24,8 +24,6 @@
   },
   "homepage": "https://github.com/haricane8133/unique-tabid#readme",
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.6",
-    "@babel/preset-env": "^7.19.4"
+    "typescript": "^4.8.4"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "target": "ES2015",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "include": ["./src/**/*"]
+}
