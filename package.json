@@ -1,6 +1,6 @@
 {
   "name": "unique-tabid",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "This package helps you maintain Unique IDs per tab, takes care of differentiating duplicated tabs/sessions, and also new tabs vs old tabs. This works by using SessionStorage and BroadcastChannel Communication.",
   "main": "lib/index.js",
   "files": [
