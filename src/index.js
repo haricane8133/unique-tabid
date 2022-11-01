@@ -1,18 +1,14 @@
 class UniqueTabId {
   #sessionStorageKey;
+  #sessionStorageKey_parentTab;
   #gotResponse = false;
   #channel = undefined;
 
   /**
-   * Set this as true if you want to create a new tab id for a duplicated tab
-   * This is the default behavior is the same too.
-   * If you set this as false, you will see that duplicated tabs retain the same tab id as the original tab
+   * A callback that is called with the tabId, isTabNew and parentTabId, after the Broadcast Channel communication is done
+   * 
    */
-  newTabIdForDuplicatedTab = true;
-  /**
-   * A callback that is called with the tabId, isTabDuplicated and isNewTab, after the Broadcast Channel communication is done
-   */
-  tabidCallback = () => {};
+  tabIdCallback = () => {};
   /**
    * A function that would be called to generate a uniqueId
    */
@@ -22,32 +18,33 @@ class UniqueTabId {
    */
   WAIT_TIMEOUT = 1000;
 
-  constructor(appid = "client") {
+  constructor(appId = "client") {
     this.initTab = this.initTab.bind(this);
     this.removeTabId = this.removeTabId.bind(this);
 
-    this.#sessionStorageKey = appid + "-unique-tabid";
-    this.#channel = new BroadcastChannel(appid + "-unique-tabid-broadcast-channel");
+    this.#sessionStorageKey = `unique-tabid-${appId}`;
+    this.#sessionStorageKey_parentTab = `unique-tabid-${appId}_parent`;
+    this.#channel = new BroadcastChannel(`unique-tabid-broadcast-channel-${appId}`);
     this.#channel.onmessage = (msg) => {
       const type = msg && msg.data && msg.data.type;
-      let tabid = msg && msg.data && msg.data.tabid;
+      let tabId = msg && msg.data && msg.data.tabId;
     
       if(type === "SEARCH"){
-        if(window.sessionStorage.getItem(this.#sessionStorageKey) === tabid){
+        if(window.sessionStorage.getItem(this.#sessionStorageKey) === tabId){
           this.#channel.postMessage({
             type: "FOUND",
-            tabid
+            tabId
           })
         }
       }
       else if(type === "FOUND"){
-        if(window.sessionStorage.getItem(this.#sessionStorageKey) === tabid){
+        if(window.sessionStorage.getItem(this.#sessionStorageKey) === tabId){
           this.#gotResponse = true;
-          if(this.newTabIdForDuplicatedTab){
-            tabid = this.uniqIdFunc();
-            window.sessionStorage.setItem(this.#sessionStorageKey, tabid);
-          }
-          this.tabidCallback(tabid, true, true);
+          const parentTabId = tabId;
+          tabId = this.uniqIdFunc();
+          window.sessionStorage.setItem(this.#sessionStorageKey_parentTab, parentTabId);
+          window.sessionStorage.setItem(this.#sessionStorageKey, tabId);
+          this.tabIdCallback({tabId, isTabNew: true, parentTabId});
         }
       }
     };
@@ -59,21 +56,22 @@ class UniqueTabId {
   }
   
   initTab(){
-    let tabid = window.sessionStorage.getItem(this.#sessionStorageKey);
-    if(tabid === null){
-      tabid = this.uniqIdFunc();
-      window.sessionStorage.setItem(this.#sessionStorageKey, tabid);
-      this.tabidCallback(tabid, false, true);
+    let tabId = window.sessionStorage.getItem(this.#sessionStorageKey);
+    if(tabId === null){
+      tabId = this.uniqIdFunc();
+      window.sessionStorage.setItem(this.#sessionStorageKey, tabId);
+      this.tabIdCallback({tabId, isTabNew: true, parentTabId: null});
     }
     else{
       this.#gotResponse = false;
       this.#channel.postMessage({
         type: "SEARCH",
-        tabid
+        tabId
       });
       setTimeout(() => {
         if(!this.#gotResponse){
-          this.tabidCallback(tabid, false, false);
+          const parentTabId = window.sessionStorage.getItem(this.#sessionStorageKey_parentTab);
+          this.tabIdCallback({tabId, isTabNew: false, parentTabId});
         }
       }, this.WAIT_TIMEOUT);
     }

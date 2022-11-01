@@ -1,6 +1,6 @@
 # unique-tabid
 
-This package helps you maintain Unique IDs per tab by taking care of differentiating duplicated tabs/sessions as well. Thise package can also be leveraged to let you know if a newly loaded tab was duplicated or not.
+This package helps you maintain Unique IDs per tab by taking care of differentiating duplicated tabs/sessions as well. This package can also be leveraged to let you know if a newly loaded tab was duplicated or not, and also get the TabId of the parent tab (the tab from which this was duplicated)
 
 ## What browser APIs we use
 We make use of the following
@@ -43,15 +43,11 @@ uniqueTabId.WAIT_TIMEOUT = 2000;
 // In this example, I have used the famous uniqid package from NPM
 uniqueTabId.uniqIdFunc = uniqid;
 
-// default value is also true. You can configure whether we need new TabIDs for duplicated tabs
-uniqueTabId.newTabIdForDuplicatedTab = true;
-
-
 // This is the callback that is called when we have the tabId ready, after all the communications
-uniqueTabId.tabidCallback = (tabid, wasDuplicated, isNewTab) => {}
+uniqueTabId.tabIdCallback = ({tabId, isNewTab, parentTabId}) => {}
 // If used in React, you can call a State Change like shown in the functional React example below.
 const [text, setText] = useState("");
-uniqueTabId.tabidCallback = (tabid, wasDuplicated, isNewTab) => setText(`TabId: ${tabid}; Duplicated: ${wasDuplicated}; New Tab: ${isNewTab}`);
+uniqueTabId.tabIdCallback = ({tabId, isNewTab, parentTabId}) => setText(`TabId: ${tabId}; New Tab: ${isNewTab}; Duplicated: ${parentTabId !== null ? `Yes. ParentTabId = ${parentTabId}` : "No"}`);
 
 // IMPORTANT: You need to absolutely call the following method at every tab initialization. This is the main process.
 uniqueTabId.initTab()
